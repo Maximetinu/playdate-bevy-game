@@ -278,6 +278,9 @@ const TEXT_HEIGHT: i32 = 16;
 
 crankstart_game!(State);
 
+#[cfg(cortex_m)]
+use cortex_m as _;
+
 #[cfg(not(cortex_m))]
 mod bad_critical_section {
     use critical_section::{set_impl, Impl, RawRestoreState};
@@ -296,20 +299,22 @@ mod bad_critical_section {
     }
 }
 
-// extern crate getrandom;
+use rand::{Rng, SeedableRng};
 
-// const SEED_MASK: u64 = 0xdeadbeefbadc0ded;
+extern crate getrandom;
 
-// fn getrandom_seeded(dest: &mut [u8]) -> Result<(), getrandom::Error> {
-//     let seconds = crankstart::system::System::get()
-//         .get_seconds_since_epoch()
-//         .unwrap();
-//     let seed = seconds.1 as u64 + (seconds.0 as u64) << 32;
-//     let seed = SEED_MASK ^ seed;
+const SEED_MASK: u64 = 0xdeadbeefbadc0ded;
 
-//     let mut rng = rand::rngs::SmallRng::seed_from_u64(seed);
-//     rng.fill(dest);
-//     Ok(())
-// }
+fn getrandom_seeded(dest: &mut [u8]) -> Result<(), getrandom::Error> {
+    let seconds = crankstart::system::System::get()
+        .get_seconds_since_epoch()
+        .unwrap();
+    let seed = seconds.1 as u64 + (seconds.0 as u64) << 32;
+    let seed = SEED_MASK ^ seed;
 
-// getrandom::register_custom_getrandom!(getrandom_seeded);
+    let mut rng = rand::rngs::SmallRng::seed_from_u64(seed);
+    rng.fill(dest);
+    Ok(())
+}
+
+getrandom::register_custom_getrandom!(getrandom_seeded);
