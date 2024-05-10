@@ -1,7 +1,8 @@
 # Instructions
 
-1. Install [crank](https://github.com/pd-rs/crank) `cargo install --git=https://github.com/pd-rs/crank`
-2. `crank run`
+1. Install [crank](https://github.com/pd-rs/crank) `cargo install --git=https://github.com/pd-rs/crank` and requirements
+2. `rustup override set nightly`
+3. `crank run`
 
 ----
 
